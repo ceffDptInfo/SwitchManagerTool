@@ -1,18 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SwitchesDll;
-using System.Reflection.Metadata;
 
 namespace API.Context
 {
     public class ContextSavedState : DbContext
     {
-        public ContextSavedState() 
+        public ContextSavedState()
         {
             try
             {
                 Database.EnsureCreated();
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
@@ -24,7 +23,7 @@ namespace API.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb; Database=switch_port_managment; Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer("Server=host.docker.internal,1433;Database=switch_port_managment;User Id=sa;Password=YourStrong!Password123;TrustServerCertificate=True");
         }
     }
 }

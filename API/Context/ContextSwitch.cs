@@ -22,7 +22,7 @@ namespace API.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb; Database=switches_database; Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer("Server=host.docker.internal,1433;Database=switches_database;User Id=sa;Password=YourStrong!Password123;TrustServerCertificate=True;");
         }
     }
 }
