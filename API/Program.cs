@@ -1,5 +1,6 @@
 using API.Context;
 using API.Singletons;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,21 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    try
+    {
+        var context1 = services.GetRequiredService<ContextSavedState>();
+        var context2 = services.GetRequiredService<ContextSwitch>();
+
+        context1.Database.Migrate();
+        context2.Database.Migrate();
+    }
+    catch { }
+}
 
 Dot1qSwPortConfigSingleton dot1qSingleton = app.Services.GetRequiredService<Dot1qSwPortConfigSingleton>();
 dot1qSingleton.StartPollingThread();
