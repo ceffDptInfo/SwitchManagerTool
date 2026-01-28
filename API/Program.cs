@@ -32,7 +32,11 @@ using (var scope = app.Services.CreateScope())
         context1.Database.EnsureCreated();
         context2.Database.EnsureCreated();
     }
-    catch { }
+    catch (Exception e)
+    {
+        Console.WriteLine(e.Message);
+        return;
+    }
 }
 
 Dot1qSwPortConfigSingleton dot1qSingleton = app.Services.GetRequiredService<Dot1qSwPortConfigSingleton>();
