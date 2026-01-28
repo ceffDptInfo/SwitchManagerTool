@@ -44,7 +44,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-//app.UseHttpsRedirection()f;
+//app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
