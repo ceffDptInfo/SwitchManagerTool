@@ -1,0 +1,531 @@
+﻿@using Frontend.Model
+@using SwitchesDll
+@using Frontend.NetgearAPI
+@using Helpers
+@using System.Text.Json
+@using Frontend.Singletons
+@using Frontend.Providers
+
+@page "/home"
+@inject DialogService DialogService
+@inject IJSRuntime JsRuntime
+@inject NotificationService NotificationService
+@rendermode InteractiveServer
+@inject NavigationManager navigation;
+@inject HttpClient client;
+
+<div class="container d-flex flex-column justify-content-center align-items-center">
+    <div class="row text-center mt-3">
+        <RadzenStack Orientation="Orientation.Horizontal" >
+
+            <RadzenDropDown @bind-Value=@ipOfSelectedSwitchDBs[0] Change=@DropDownSelected Data=@switchDBList TextProperty="@nameof(SwitchDB.Name)"
+            ValueProperty="@nameof(SwitchDB.Ip)" Name="DropDownBindValue" @ref="dropDown" TValue="string" />
+
+            <RadzenButton Text="Refresh" Click="OnRefreshButtonPressed" />
+        </RadzenStack>
+    </div>
+    <RadzenStack Class="rz-w-100" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0" JustifyContent="JustifyContent.SpaceBetween">
+        <RadzenButton Click="GoToSwitchesScreen" Text="Back"></RadzenButton>
+        <RadzenTextBox style="resize:none; align-self:end" @ref="searchbar" title="Search" Placeholder='Search🔎' ValueChanged="OnSearchBarChanged"></RadzenTextBox>
+    </RadzenStack>
+    <div class="mt-3 fw-bold">
+        @switchDBList.Where(x => ipOfSelectedSwitchDBs.Contains(x?.Ip??"")).FirstOrDefault()?.Name
+    </div>
+    <div class="row text-center">
+        <RadzenStack Orientation="Orientation.Vertical">
+
+            <RadzenDataGrid AllowVirtualization="true" style="height:70vh" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced"
+            AllowSorting="true" AllowPaging="false" PagerHorizontalAlign="HorizontalAlign.Left"  ShowPagingSummary="true"
+            Data="@filteredEquipements" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Multiple"
+            @bind-Value=@selectedDatagridContent @ref="grid" IsLoading="Provider.state.IsLoading">
+                <Columns>
+                    <RadzenDataGridColumn Width="60px" Sortable="false" Filterable="false">
+                        <HeaderTemplate>
+                            <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Select all items" }})"
+                            Value="@(selectedDatagridContent != null && (selectedDatagridContent.Any() || filteredEquipements.All(i => selectedDatagridContent.Contains(i))))"
+                            Change="@(args => selectedDatagridContent = args == true ? filteredEquipements.ToList() : null)" />
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(selectedDatagridContent != null && selectedDatagridContent.Contains(data))" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Select item" }})"
+                            TValue="bool" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="DatagridContent" Property="@nameof(DatagridContent.Id)" Filterable="true" Title="PORT" Frozen="true" Width="180px" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn Width="120px" TItem="DatagridContent" Property="@nameof(DatagridContent.EquipmentType)" Title="Type" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="DatagridContent" Property="@nameof(DatagridContent.RemotePortId)" Title="Mac Address" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn Width="200px" TItem="DatagridContent" Property="@nameof(DatagridContent.RemoteSysName)" Title="Host Name" TextAlign="TextAlign.Center">
+                        <Template Context="content">
+                            @{
+                                if (switchDBList.Where(x => x?.Name == content.RemoteSysName).FirstOrDefault() is not null)
+                                {
+                                    <RadzenButton Click="@(() => OnLinkClick(content))">@content.RemoteSysName</RadzenButton>
+                                }else
+                                {
+                                    if(content.ChassisId == "")
+                                    {
+                                        string defaultSring = "No RemoteSys Name";
+                                        @defaultSring
+                                    }
+                                    else
+                                    {
+                                        @content.ChassisId;
+                                    }
+                                }
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn Width="180px" TItem="DatagridContent" Property="@nameof(DatagridContent.IpV4)" Filterable="true" Title="Ip Address" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn Width="120px" TItem="DatagridContent" Property="@nameof(DatagridContent.AccessVlan)" Filterable="true" Title="VLAN" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn Width="180px" TItem="DatagridContent" Property="@nameof(DatagridContent.ConfigMode)" Filterable="true" Title="VLAN Mode" TextAlign="TextAlign.Center"/>
+                    @* <RadzenDataGridColumn Width="180px" TItem="DatagridContent" Property="@nameof(DatagridContent.AdminMode)" Filterable="true" Title=" Admin Mode" TextAlign="TextAlign.Center" /> *@
+                    <RadzenDataGridColumn Width="180px" TItem="DatagridContent" Property="@nameof(DatagridContent.ConnectionState)" Filterable="true" Title=" Is Connected" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn Sortable="false" Filterable="false">
+                        <Template Context="content">
+                            @{
+                                if (!content.ChassisId.Contains("PROF"))
+                                {
+                                    <RadzenSplitButton Text="Actions" Click=@(args => OnSingleActionClick(args, "Actions", content))>
+                                        <ChildContent>
+                                            @{
+                                                if(content.ConnectionState)
+                                                {
+                                                    <RadzenSplitButtonItem Text="Change Vlan" Value="1" />
+                                                    <RadzenSplitButtonItem Text="Port Shutdown" Value="2" />
+                                                }
+                                                else
+                                                {
+                                                    <RadzenSplitButtonItem Text="Change Vlan" Value="1" />
+                                                    <RadzenSplitButtonItem Text="Port Wake Up" Value="2" />
+                                                    <RadzenSplitButtonItem Text="Delete" Value="3" />
+                                                }
+                                                if(content.EquipmentType == DatagridContent.EquipmentTypeEnum.SWITCH && !SwitchProvider.ContainsSwitch(content.IpV4)){
+                                                    <RadzenSplitButtonItem Text="Register Switch" Value="4"/>
+                                                }
+                                            }
+                                        </ChildContent>
+                                    </RadzenSplitButton>
+                                }
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+
+            
+            <RadzenLabel class="fw-bold" Text="Grouped actions" />
+            
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceAround">
+                <RadzenButton Text="Wake Up" Click="GroupedWakeUpButtonClick" />
+                <RadzenButton Text="Shut Down" Click="GroupedShutDownButtonClick" />
+                <RadzenButton Text="Change Vlan" Click="GroupedChangeVlanButtonClick" />
+            </RadzenStack>
+
+        </RadzenStack>
+    </div>
+</div>
+
+@code {
+    protected string ClientIp = "127.0.0.1";
+    protected RadzenDropDown<string>? dropDown { get; set; }
+    //Ref to Radzen grid
+    protected RadzenDataGrid<DatagridContent>? grid { get; set; }
+    //Loading time for the circular loader
+    protected RadzenTextBox? searchbar { get; set; }
+
+    protected EquipmentProvider Provider = EquipmentProvider.Instance;
+    protected SwitchProvider SwitchProvider = SwitchProvider.Instance;
+
+    protected List<DatagridContent> filteredEquipements = new();
+
+    //List of all switchDb
+    protected List<SwitchDB?> switchDBList { get; set; } = new List<SwitchDB?>();
+    //List of lldp on a switchDB
+    protected List<DatagridContent> datagridContentList { get; set; } = new List<DatagridContent>();
+    protected IList<DatagridContent>? selectedDatagridContent { get; set; } = new List<DatagridContent>();
+    //Ip of the switch given by the DropDown
+    protected List<string> ipOfSelectedSwitchDBs { get; set; } = new();
+
+    protected int newVlan { get; set; }
+
+    protected JsonSerializerOptions options = new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
+    protected async override Task OnInitializedAsync()
+    {
+
+        Console.WriteLine(ClientIp);
+        Provider.UpdatedContent += on_provider_update;
+        ipOfSelectedSwitchDBs = SwitchProvider.state.SelectedSwitches?.Select(sw=> sw.Ip).ToList() ?? new();
+
+        await LoadSwitches();
+        await ReloadAndRefresh();
+        // ClientIp = await client.GetStringAsync("https:localhost:7168/api/Ip");
+    }
+
+    protected async Task LoadSwitches(){
+        try
+        {
+            //Load the switchDB for DropDown
+            var response = await SwitchProvider.FetchSwitches();
+            if (response == null)
+            {
+                return;
+            }
+            switchDBList = response!;
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    protected  void on_provider_update(object? o, EventArgs e)
+    {
+        if(Provider.state.IsError){
+            NotificationService.Notify(new NotificationMessage
+                    { Severity = NotificationSeverity.Error, Summary = "Error:", Detail = Provider.state.ErrorMsg });
+        }else {
+
+            NotificationService.Notify(new NotificationMessage
+                    { Severity = NotificationSeverity.Info, Summary = "Refresh", Detail = "Page Reloaded!" });
+        }
+
+        filteredEquipements = Provider.state.Equipments;
+
+        this.InvokeAsync(() => {
+            this.StateHasChanged();
+        });
+    }
+
+
+    public async Task OnRefreshButtonPressed()
+    {
+        await ReloadAndRefresh();
+    }
+
+    public async Task ReloadAndRefresh(){
+        await LoadSwitches();
+
+        List<SwitchDB?>? switchDBs = this.switchDBList.Where(x => ipOfSelectedSwitchDBs.Contains(x?.Ip?? "") && x != null).ToList() ?? new ();
+        if (switchDBs == null || switchDBs.Count == 0)
+        {
+            return;
+        }
+        SwitchProvider.SelectSwitches(switchDBs!);
+
+        await Provider.FetchLldpRemoteDevices();
+        
+        this.StateHasChanged();
+    }
+
+
+    public async Task DropDownSelected()
+    {
+        await ReloadAndRefresh();
+    }
+
+    public void OnLinkClick(DatagridContent datagridContent)
+    {
+        if(dropDown == null){
+            return;
+        }
+        dropDown.SelectItem(switchDBList.Where(x => x?.Name == datagridContent.RemoteSysName).FirstOrDefault()?.Ip);
+    }
+
+    public async Task OnSingleActionClick(RadzenSplitButtonItem item, string buttonName, DatagridContent datagridContent)
+    {
+        bool hasConfirmed = false;
+        if (item != null)
+        {
+            if(item.Value == "1")
+            {
+                Dot1qSwPortConfigResponse? dot1QSwPortConfigResponse = null;
+                int actualVlan = 0;
+                try
+                {
+                    dot1QSwPortConfigResponse = await Provider.GetDot1qSwPortConfig(datagridContent.Id);
+
+                    if(dot1QSwPortConfigResponse == null || dot1QSwPortConfigResponse.Dot1qSwPortConfig == null){
+                        return;
+                    }
+
+                    actualVlan = dot1QSwPortConfigResponse.Dot1qSwPortConfig.AccessVlan;
+                    newVlan = actualVlan;
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+
+                bool? state = await DialogService.OpenAsync("Change VLAN", ds =>
+                    @<RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+                            <RadzenText> 
+                            Actual VLAN (@actualVlan) 
+                            </RadzenText>
+                            <RadzenText>New VLAN </RadzenText>
+                            <RadzenNumeric @bind-Value="@newVlan" />
+                        </RadzenStack>
+                        <RadzenStack Orientation="Orientation.Horizontal">
+                            <RadzenButton Text="Ok" Click="() => ds.Close(true)" Style="width: 80px;" />
+                            <RadzenButton Text="Cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Light" />
+                        </RadzenStack>
+                    </RadzenStack>
+    );
+
+                if(state != null && state == true && newVlan != 0 && dot1QSwPortConfigResponse != null && dot1QSwPortConfigResponse.Dot1qSwPortConfig != null)
+                {
+                    dot1QSwPortConfigResponse.Dot1qSwPortConfig.AccessVlan = newVlan;
+                    dot1QSwPortConfigResponse.Dot1qSwPortConfig.AllowedVlanList = new[] { "all" };
+                    dot1QSwPortConfigResponse.Dot1qSwPortConfig.ConfigMode = "access";
+                    dot1QSwPortConfigResponse.Dot1qSwPortConfig.NativeVlan = 1;
+
+                    try
+                    {
+                        await Provider.ChangePortVlan(newVlan, datagridContent.Id);
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
+
+            }
+            else if(item.Value == "2")
+            {
+
+                if(ClientIp == datagridContent.IpV4){
+                    await DialogService.Alert("You can't shutdown your own port!", "Forbidden action!");
+                    return;
+                }
+
+                bool? state = await DialogService.Confirm("Are you sure?", (datagridContent.ConnectionState) ? "Port Shutdown" : "Port Wake Up", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+
+
+                if (state is not null && state is true)
+                {
+                    if(datagridContent.ConnectionState && grid != null)
+                    {
+                        await Provider.SwitchPortModeTo(false, datagridContent.Id);
+                        await SaveSwitchPortAndChild(datagridContent, SwitchProvider.state.SelectedSwitches.Where(sw=> sw.Ip == datagridContent.OwnerIp).First());
+                        datagridContent.ConnectionState = false;
+                        await grid.RefreshDataAsync();
+                    }
+                    else if (grid != null)
+                    {
+                        await Provider.SwitchPortModeTo(true, datagridContent.Id);
+                        await Provider.DeleteOfflineEquipment(datagridContent.Id, datagridContent.EquipmentType);
+                        datagridContent.ConnectionState = true;
+                        await grid.RefreshDataAsync();
+                    }
+                    hasConfirmed = true;
+                }
+            }
+            else if(item.Value == "3")
+            {
+                bool? state = await DialogService.Confirm("Are you sure?", "Delete This Element", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+
+                if(grid == null){
+                    return;
+                }
+
+                await Provider.DeleteOfflineEquipment(datagridContent.Id, datagridContent.EquipmentType);
+                datagridContentList.Remove(datagridContent);
+                await grid.RefreshDataAsync();
+            }
+            else if (item.Value == "4"){
+                navigation.NavigateTo($"/switch_register/{datagridContent.IpV4}");
+            }
+
+            if(item.Value == "2" && hasConfirmed)
+            {
+                NotificationService.Notify(new NotificationMessage
+                    { Severity = NotificationSeverity.Info, Summary = "Port toggle", Detail = $"The connection state is set to {datagridContent.ConnectionState}" });
+            }
+
+            if(item.Value == "3" && hasConfirmed)
+            {
+                NotificationService.Notify(new NotificationMessage
+                    { Severity = NotificationSeverity.Info, Summary = "Delete", Detail = $"Elements Has Been Deleted" });
+            }
+        }
+        else
+        {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Info, Summary = "SplitButton Clicked", Detail = $"{buttonName} clicked" });
+        }
+    }
+
+    public async Task<bool> GroupedWakeUpButtonClick()
+    {
+        try
+        {
+
+            bool? state = await DialogService.Confirm("Are you sure?", "WakeUp all selected", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+
+            if (state != null && state == true)
+            {
+                if(this.selectedDatagridContent == null || grid == null){
+                    return false;
+                }
+
+                foreach (DatagridContent dgc in this.selectedDatagridContent)
+                {
+                    await Provider.SwitchPortModeTo(true, dgc.Id);
+                    await Provider.DeleteOfflineEquipment(dgc.Id, dgc.EquipmentType);
+                    dgc.ConnectionState = true;
+                }
+                await grid.RefreshDataAsync();
+            }
+            return true;
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex);
+            return false;
+        }
+    }
+
+    public async Task<bool> GroupedShutDownButtonClick()
+    {
+        try
+        {
+            bool? state = await DialogService.Confirm("Are you sure?", "ShutDown all selected", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+
+            if (state != null && state == true)
+            {
+
+                if(this.selectedDatagridContent == null || grid == null){
+                    return false;
+                }
+
+                foreach (DatagridContent dgc in this.selectedDatagridContent)
+                {
+                    await Provider.SwitchPortModeTo(false, dgc.Id);
+                    await SaveSwitchPortAndChild(dgc, SwitchProvider.state.SelectedSwitches.Where(sw=> sw.Ip == dgc.OwnerIp).First());
+                    dgc.ConnectionState = false;
+                }
+                await grid.RefreshDataAsync();
+            }
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return false;
+        }
+    }
+
+    public async Task<bool> GroupedChangeVlanButtonClick()
+
+    {
+        try
+        {
+            bool? state = await DialogService.OpenAsync("Change VLAN", ds =>
+            @<RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+                    <RadzenText>New VLAN </RadzenText>
+                    <RadzenNumeric @bind-Value="@newVlan" />
+                </RadzenStack>
+                <RadzenStack Orientation="Orientation.Horizontal">
+                    <RadzenButton Text="Ok" Click="() => ds.Close(true)" Style="width: 80px;" />
+                    <RadzenButton Text="Cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Light" />
+                </RadzenStack>
+            </RadzenStack>
+    );
+
+            if (state != null && state == true && newVlan != 0)
+            {
+                Dot1qSwPortConfig dot1QSwPortConfig = new Dot1qSwPortConfig()
+                {
+                        AccessVlan = newVlan,
+                        AllowedVlanList = new[] { "all" },
+                        ConfigMode = "access",
+                        NativeVlan = 1,
+                };
+
+                if(this.selectedDatagridContent == null){
+                    return false;
+                }
+
+                foreach (DatagridContent datagridContent in this.selectedDatagridContent)
+                {
+                    await Provider.ChangePortVlan(newVlan, datagridContent.Id);
+                }
+            }
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return false;
+        }
+    }
+
+    public SwitchDB? GetActualSwitchByHisIp(string ip)
+    {
+        return this.switchDBList.Where(x => x?.Ip == ip).FirstOrDefault();
+    }
+
+    public async Task SaveSwitchPortAndChild(DatagridContent datagridContent, SwitchDB switchDB)
+    {
+        string macAdress = "";
+        string name = "";
+
+        if(Helper.IsValidMACAddress(datagridContent.ChassisId))
+        {
+            macAdress = datagridContent.ChassisId;
+        }else
+        {
+            name = datagridContent.ChassisId;
+        }
+
+
+        Switch? switchToAdd = null;
+        Windows? windowsToAdd = null;
+
+        if(datagridContent.EquipmentType == DatagridContent.EquipmentTypeEnum.SWITCH)
+        {
+            switchToAdd = new Switch()
+            {
+                MacAdress = macAdress,
+                Name = name,
+                Ip = datagridContent.IpV4,
+                PortNumber = datagridContent.Id,
+            };
+        }
+        else
+        {
+            windowsToAdd = new Windows 
+            {
+                MacAdress = macAdress,
+                Name = name,
+
+            };
+        }
+
+        if(windowsToAdd == null){
+            return;
+        }
+
+        EquipmentRootObject equipmentRootObject = new EquipmentRootObject()
+        {
+            UpperSwitchDB = switchDB,
+            Equipment = windowsToAdd,
+        };
+
+        await Provider.SaveSwitchPortAndChild(datagridContent.Id, datagridContent.EquipmentType, equipmentRootObject);
+    }
+
+    public void OnSearchBarChanged(){
+        string term = searchbar?.Value ?? "";
+
+        filteredEquipements = Provider.state.Equipments.Where(e => e.ChassisId.ToLower().Contains(term.ToLower())).ToList();
+    }
+
+    public void GoToSwitchesScreen(){
+        navigation.NavigateTo("/");
+    }
+}

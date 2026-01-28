@@ -1,0 +1,141 @@
+﻿@using Frontend;
+@using Frontend.Providers;
+@using SwitchesDll;
+
+@page "/";
+@rendermode InteractiveServer
+@inject NotificationService NotificationService;
+@inject NavigationManager navigation;
+@inject DialogService DialogService;
+
+<div>
+	<h1 style="text-align: center">
+		Switches
+	</h1>
+
+	<RadzenButton Text="Register Switch" Click="RegisterSwitch"></RadzenButton>
+	@if(progressBar){
+		<div style="position: absolute;
+                    top: 0; left: 0;
+                    width: 100%; height: 100%;
+                    background-color: rgba(255, 255, 255, 0.7); /* Whitish transparent */
+                    z-index: 10; /* Higher number = on top */
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;">
+			<RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate"></RadzenProgressBarCircular>
+		</div>
+	}
+
+	<RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced"
+	AllowSorting="true" PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+	Data="@Provider.state.Switches" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Multiple"
+	IsLoading="Provider.state.IsLoading">
+		<Columns>
+			<RadzenDataGridColumn Filterable="false" Sortable="false" Width="60px">
+				<HeaderTemplate>
+					<RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Select all items" }})"
+					Value="@(Provider.state.Switches.All(i => SelectedSwitches.Contains(i)))"
+					Change="@(args => SelectedSwitches = args == true ? Provider.state.Switches.ToList():new ())" />
+				</HeaderTemplate>
+				<Template Context="data">
+					<RadzenCheckBox TabIndex="-1" TriState="false" Change="@(arg=> SelectSwitches(data))" TValue="bool" Value="@(SelectedSwitches.Contains(data))"
+					InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Select item" }})"/>
+				</Template>
+			</RadzenDataGridColumn>
+			<RadzenDataGridColumn TItem="SwitchDB" Property="@nameof(SwitchDB.Name)" Filterable="true" Title="Name" Frozen="true" Width="180px" TextAlign="TextAlign.Center" />
+			<RadzenDataGridColumn TItem="SwitchDB" Property="@nameof(SwitchDB.Ip)" Filterable="true" Title="Ip Address" Frozen="true" Width="180px" TextAlign="TextAlign.Center" />
+			<RadzenDataGridColumn TItem="SwitchDB" Property="@nameof(SwitchDB.MacAdress)" Filterable="true" Title="Mac Address" Frozen="true" Width="180px" TextAlign="TextAlign.Center" />
+			<RadzenDataGridColumn Sortable="false" Filterable="false" Width="120px">
+				<Template Context="content">
+					<RadzenSplitButton Text="Actions" Click=@(args => DoActions(args?.Value,[content]))>
+						<ChildContent>
+							@{
+								<RadzenSplitButtonItem Text="Show Connected Equipement" Value="1" />
+								<RadzenSplitButtonItem Text="Delete" Value="2" />
+							}
+						</ChildContent>
+					</RadzenSplitButton>
+				</Template>
+			</RadzenDataGridColumn>
+		</Columns>
+	</RadzenDataGrid>
+
+	<RadzenStack Orientation="Orientation.Horizontal">
+		<RadzenButton Text="Show Equipment" Disabled="SelectedSwitches.Count == 0" Click="@( _ => DoActions("1", SelectedSwitches.ToList()))" />
+		<RadzenButton Text="Delete Selection" Disabled="SelectedSwitches.Count == 0" Click="@( _ => DoActions("2", SelectedSwitches.ToList()))" />
+	</RadzenStack>
+</div>
+
+@code {
+	protected SwitchProvider Provider = SwitchProvider.Instance;
+	protected IList<SwitchDB> SelectedSwitches = new List<SwitchDB>();
+	protected bool progressBar = false;
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		await Provider.FetchSwitches();
+		Provider.UpdatedContent += OnContentUpdate;
+	}
+
+	protected void OnContentUpdate(object? o, EventArgs e){
+		if (Provider.state.IsError)
+		{
+			NotificationService.Notify(new NotificationMessage
+				{ Severity = NotificationSeverity.Error, Summary = "Error:", Detail = Provider.state.ErrorMsg });
+		}
+		else
+		{
+
+			NotificationService.Notify(new NotificationMessage
+				{ Severity = NotificationSeverity.Info, Summary = "Refresh", Detail = "Page Reloaded!" });
+		}
+
+		this.InvokeAsync(() =>
+		{
+			this.StateHasChanged();
+		});
+	}
+
+	public void RegisterSwitch()
+	{
+		navigation.NavigateTo("/switch_register");
+	}
+
+	public void SelectSwitches(SwitchDB sw){
+		if(SelectedSwitches.Contains(sw)){
+			SelectedSwitches.Remove(sw);
+		}
+		else{
+			SelectedSwitches.Add(sw);
+		}
+	}
+
+
+
+	public async void DoActions(string? value,List<SwitchDB> switches){
+
+		switch (value ?? "1")
+		{
+			case "1":
+				{
+					progressBar = true;
+					Provider.SelectSwitches(switches);
+					navigation.NavigateTo("/home");
+				}
+				break;
+			case "2": 
+				{
+					string end = switches.Count > 1 ? "es" : "";
+					bool result = await DialogService.OpenAsync<ConfirmBox>("Confirmation", new() { { "Message", $"Do you really want to delete {switches.Count} switch{end}" } }, new DialogOptions() { Width = "400px", Height = "auto" })?? false;
+					if(result){
+						foreach (var sw in switches){
+							await Provider.DeleteSwitch(sw);
+						}
+					}
+					} break;
+				default: break;
+			}
+	}
+}

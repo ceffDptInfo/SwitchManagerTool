@@ -1,0 +1,71 @@
+﻿@using Frontend.Providers
+@using SwitchesDll;
+
+@page "/switch_register/{ipOrHostname}"
+@page "/switch_register"
+@rendermode InteractiveServer
+@inject NavigationManager navigation;
+@inject NotificationService notificationService;
+@inject DialogService DialogService;
+
+<div><RadzenStack Orientation="Orientation.Vertical">
+		<h1>Register a new switch</h1>
+		<RadzenTextBox @bind-Value="ipOrHostname" Style="resize:none;" Placeholder="Ip Or Hostname"></RadzenTextBox>
+		<RadzenTextBox @bind-Value="user" Style="resize:none;" Placeholder="User"></RadzenTextBox>
+		<RadzenPassword @bind-Value="password" Style="resize:none;" Placeholder="Password"></RadzenPassword>
+		<RadzenButton Text="Search for Switch" Click="SearchSwitch"></RadzenButton>
+		<RadzenTextBox @bind-Value="name" Style="resize:none;" Disabled="true" Placeholder="Switch name"></RadzenTextBox>
+		<RadzenTextBox @bind-Value="ip" Style="resize:none;" Disabled="true" Placeholder="Ip Address"></RadzenTextBox>
+		<RadzenTextBox @bind-Value="mac" Style="resize:none;" Disabled="true" Placeholder="Mac Address"></RadzenTextBox>
+		<RadzenStack Orientation="Orientation.Horizontal">
+			<RadzenButton Click="@Cancel" Style="background-color:red" Text="Cancel"></RadzenButton>
+			<RadzenButton Disabled="@(mac ==null || mac == string.Empty)" Click="@Save" Text="Save"></RadzenButton>
+		</RadzenStack>
+	</RadzenStack>
+</div>
+
+
+
+@code {
+	[Parameter]
+	public string? ipOrHostname { get; set; }
+	string? name;
+	string? ip;
+	string? mac;
+	string? user;
+	string? password;
+
+	SwitchProvider SwitchProvider = SwitchProvider.Instance;
+
+	public async void SearchSwitch(){
+		var sw = await SwitchProvider.SearchForSwitchFromIP(ipOrHostname ?? "", user ?? "", password ?? "");
+
+		if (SwitchProvider.state.IsError)
+		{
+			notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Error", Detail = SwitchProvider.state.ErrorMsg });
+		}
+		else
+		{
+			notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Switch Found!", Detail = $"Switch {sw!.Name} was successfully found!"});
+			name = sw!.Name;
+			mac = sw!.MacAdress.Replace(":", "-");
+			ip = sw!.Ip;
+			this.StateHasChanged();
+		}
+	}
+
+	public async void Cancel(){
+		bool result = await DialogService.OpenAsync<ConfirmBox>("Confirmation", new() { { "Message", $"Do you really want to cancel the Switch registration?\nEvery unsaved Data will be lost!" } }, new DialogOptions() { Width = "400px", Height = "auto" }) ?? false;
+		navigation.NavigateTo("/");
+	}
+	public async void Save(){
+		await SwitchProvider.AddSwitch(new SwitchDB() { Id = 0, Ip = ip ?? "", MacAdress = mac ?? "", Name = name ?? "", Username = user ?? "", Password = password ?? "" });
+
+		if (SwitchProvider.state.IsError){
+			notificationService.Notify(new NotificationMessage { Severity=NotificationSeverity.Error, Summary = "Error", Detail = SwitchProvider.state.ErrorMsg });
+		}
+		else{
+			navigation.NavigateTo("/");
+		}
+	}
+}

@@ -1,0 +1,20 @@
+services:
+  db:
+    image: mariadb:${MYSQL_VERSION}
+    restart: always
+    container_name: ${PROJECT_NAME}_mariadb
+    environment:
+        MYSQL_DATABASE: ${MYSQL_DATABASE}
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+        - '8989:3306'
+    expose:
+        - '3306'
+    volumes:
+        - db:/var/lib/mysql
+    env_file:
+        - ./.env
+volumes:
+    db:

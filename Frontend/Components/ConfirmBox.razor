@@ -1,0 +1,19 @@
+﻿@inject DialogService DialogService
+
+<RadzenStack Orientation="Orientation.Vertical" Gap="2rem">
+	@foreach(string msg in GetSplitMessage()){
+		<RadzenText>@msg</RadzenText>
+	}
+
+	<RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="1rem">
+		<RadzenButton Text="Cancel" ButtonStyle="ButtonStyle.Light" Click="() => DialogService.Close(false)"/>
+		<RadzenButton Text="Confirm" ButtonStyle="ButtonStyle.Danger" Click="() => DialogService.Close(true)"/>
+	</RadzenStack>
+</RadzenStack>
+
+@code {
+	[Parameter] public string Message { get; set; } = "Are you sure?";
+	public string[] GetSplitMessage(){
+		return Message.Split("\n");
+	}
+}
