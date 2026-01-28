@@ -1,4 +1,4 @@
-name: Publish to GHCR
+name: Publish Api and Frontend to GHCR
 
 on:
   push:
@@ -21,12 +21,26 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-      
-      - name: Publish to Github Container Registry
+
+      - name: Run Tests
         run: |
-          dotnet publish --os linux --arch x64 /t:PublishContainer -c Release \
+          dotnet test "SwitchManagerTool/Tests/APIxUnitTests/APIxUnitTests.csproj"
+          dotnet test "SwitchManagerTool/Tests/FrontendxUnitTest/FrontendxUnitTest.csproj"
+      
+      - name: Publish Api to Github Container Registry
+        run: |
+          dotnet publish "SwitchManagerTool/API/API.csproj" --os linux --arch x64 /t:PublishContainer -c Release \
             -p:ContainerRegistry=ghcr.io \
-            -p:ContainerRepository=${{env.IMAGE_NAME}} \
+            -p:ContainerRepository=${{env.IMAGE_NAME}}-api \
+            -p:ContainerRegistryUser=${{github.actor}} \
+            -p:ContainerRegistryPassword=${{secrets.GITHUB_TOKEN}} \
+            -p:ContainerImageTag=latest
+            
+      - name: Publish Frontend to Github Container Registry
+        run: |
+          dotnet publish "SwitchManagerTool/Frontend/Frontend.csproj" --os linux --arch x64 /t:PublishContainer -c Release \
+            -p:ContainerRegistry=ghcr.io \
+            -p:ContainerRepository=${{env.IMAGE_NAME}}-frontend \
             -p:ContainerRegistryUser=${{github.actor}} \
             -p:ContainerRegistryPassword=${{secrets.GITHUB_TOKEN}} \
             -p:ContainerImageTag=latest
