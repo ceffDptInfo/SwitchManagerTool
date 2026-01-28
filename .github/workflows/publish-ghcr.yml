@@ -24,8 +24,8 @@ jobs:
 
       - name: Run Tests
         run: |
-          dotnet test "SwitchManagerTool/Tests/APIxUnitTests/APIxUnitTests.csproj"
-          dotnet test "SwitchManagerTool/Tests/FrontendxUnitTest/FrontendxUnitTest.csproj"
+          dotnet test "./Tests/APIxUnitTests/APIxUnitTests.csproj"
+          dotnet test "./Tests/FrontendxUnitTest/FrontendxUnitTest.csproj"
       
       - name: Publish Api to Github Container Registry
         run: |
