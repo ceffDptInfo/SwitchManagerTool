@@ -26,11 +26,22 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        var context1 = services.GetRequiredService<ContextSavedState>();
-        var context2 = services.GetRequiredService<ContextSwitch>();
+        var context = services.GetRequiredService<ContextSavedState>();
 
-        context1.Database.EnsureCreated();
-        context2.Database.EnsureCreated();
+        context.Database.EnsureCreated();
+
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine($"CRITICAL ERROR ::: {e.Message}");
+        return;
+    }
+    try
+    {
+
+        var context = services.GetRequiredService<ContextSwitch>();
+
+        context.Database.EnsureCreated();
     }
     catch (Exception e)
     {
