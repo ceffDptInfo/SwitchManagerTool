@@ -37,6 +37,7 @@ jobs:
       - name: Publish Api to Github Container Registry
         run: |
           dotnet publish "./API/API.csproj" --os linux --arch x64 /t:PublishContainer -c Release \
+            --self-contained true \
             -p:ContainerRegistry=ghcr.io \
             -p:ContainerRepository=${{env.IMAGE_NAME}}-api \
             -p:ContainerImageTag=latest
@@ -44,6 +45,7 @@ jobs:
       - name: Publish Frontend to Github Container Registry
         run: |
           dotnet publish "./Frontend/Frontend.csproj" --os linux --arch x64 /t:PublishContainer -c Release \
+            --self-contained true \
             -p:ContainerRegistry=ghcr.io \
             -p:ContainerRepository=${{env.IMAGE_NAME}}-frontend \
             -p:ContainerImageTag=latest
