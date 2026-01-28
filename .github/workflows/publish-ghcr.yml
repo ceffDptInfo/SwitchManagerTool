@@ -29,7 +29,7 @@ jobs:
       
       - name: Publish Api to Github Container Registry
         run: |
-          dotnet publish "SwitchManagerTool/API/API.csproj" --os linux --arch x64 /t:PublishContainer -c Release \
+          dotnet publish "./API/API.csproj" --os linux --arch x64 /t:PublishContainer -c Release \
             -p:ContainerRegistry=ghcr.io \
             -p:ContainerRepository=${{env.IMAGE_NAME}}-api \
             -p:ContainerRegistryUser=${{github.actor}} \
@@ -38,7 +38,7 @@ jobs:
             
       - name: Publish Frontend to Github Container Registry
         run: |
-          dotnet publish "SwitchManagerTool/Frontend/Frontend.csproj" --os linux --arch x64 /t:PublishContainer -c Release \
+          dotnet publish "./Frontend/Frontend.csproj" --os linux --arch x64 /t:PublishContainer -c Release \
             -p:ContainerRegistry=ghcr.io \
             -p:ContainerRepository=${{env.IMAGE_NAME}}-frontend \
             -p:ContainerRegistryUser=${{github.actor}} \
