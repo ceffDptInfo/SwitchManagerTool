@@ -34,7 +34,7 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception e)
     {
-        Console.WriteLine(e.Message);
+        Console.WriteLine($"CRITICAL ERROR ::: {e.Message}");
         return;
     }
 }
