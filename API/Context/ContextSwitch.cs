@@ -1,24 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SwitchesDll;
 
 namespace API.Context
 {
     public class ContextSwitch : DbContext
     {
-        public ContextSwitch()
-        {
-            try
-            {
-                Database.EnsureCreated();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-        }
 
-        public DbSet<SwitchDB> SwitchDB { get; set; }
-        public DbSet<Equipment> Equipments { get; set; }
+        public DbSet<SwitchesDll.SwitchDB> SwitchDB { get; set; }
+        public DbSet<SwitchesDll.Equipment> Equipments { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
