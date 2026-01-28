@@ -1,0 +1,32 @@
+name: Publish to GHCR
+
+on:
+  push:
+    branches: ["main"]
+env:
+  IMAGE_NAME: ceffdptinfo/switch-manager-tool
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      
+      - name: Publish to Github Container Registry
+        run: |
+          dotnet publish --os linux --arch x64 /t:PublishContainer -c Release \
+            -p:ContainerRegistry=ghcr.io \
+            -p:ContainerRepository=${{env.IMAGE_NAME}} \
+            -p:ContainerRegistryUser=${{github.actor}} \
+            -p:ContainerRegistryPassword=${{secrets.GITHUB_TOKEN}} \
+            -p:ContainerImageTag=latest
