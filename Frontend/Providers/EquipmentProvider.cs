@@ -1,4 +1,5 @@
-﻿using Frontend.Model;
+﻿using Frontend.Helpers;
+using Frontend.Model;
 using Frontend.NetgearAPI;
 using Frontend.NetGearAPI.Common;
 using Frontend.Singletons;
@@ -30,7 +31,7 @@ namespace Frontend.Providers
         {
             _state = new EquipmentState();
             _httpClient = httpClient ?? new HttpClient();
-            _httpClient.BaseAddress = new Uri("https://localhost:7140/api/");
+            _httpClient.BaseAddress = new Uri($"{Helper.BaseAPIServerUrl}api/");
             _httpClient.Timeout = TimeSpan.FromMinutes(5);
             _eventsSingleton = EventsSingleton.Instance;
             _eventsSingleton.VlanChanged += Update;

@@ -29,10 +29,11 @@ namespace Frontend.Helpers
             // uSing Pattern.matcher()
 
             Match m = p.Match(str);
-
             // Return if the string
             // matched the ReGex
             return m.Success;
         }
+
+        public static string BaseAPIServerUrl = "https://localhost:7140/";
     }
 }

@@ -1,4 +1,5 @@
-﻿using SwitchesDll;
+﻿using Frontend.Helpers;
+using SwitchesDll;
 
 namespace Frontend.Providers
 {
@@ -10,7 +11,7 @@ namespace Frontend.Providers
         {
             _state = new SwitchState();
             _httpClient = httpClient ?? new HttpClient();
-            _httpClient.BaseAddress = new Uri("https://localhost:7140/api/");
+            _httpClient.BaseAddress = new Uri($"{Helper.BaseAPIServerUrl}api/");
         }
 
         public event EventHandler<EventArgs>? UpdatedContent;
