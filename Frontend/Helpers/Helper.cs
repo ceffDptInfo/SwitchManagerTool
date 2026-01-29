@@ -34,6 +34,6 @@ namespace Frontend.Helpers
             return m.Success;
         }
 
-        public static string BaseAPIServerUrl = "https://localhost:7140/";
+        public static string BaseAPIServerUrl = "http://localhost:5259/";
     }
 }
