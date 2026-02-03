@@ -5,6 +5,8 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sql_server_container
     restart: always
+    volumes:
+      - sql-data:/var/opt/mssql
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=YourStrong!Password123
@@ -23,7 +25,7 @@ services:
   api:
     image: ghcr.io/ceffdptinfo/switch-manager-tool-api:latest
     container_name: switch_api
-    restart: on-failure
+    restart: always
     depends_on:
       sql_server:
         condition: service_healthy
@@ -41,7 +43,7 @@ services:
   frontend:
     image: ghcr.io/ceffdptinfo/switch-manager-tool-frontend:latest
     container_name: switch_frontend
-    restart: on-failure
+    restart: always
     depends_on:
       - api
     ports:
@@ -63,3 +65,5 @@ networks:
       config:
         - subnet: "172.20.0.0/16"
           gateway: "172.20.0.1"
+volumes:
+  sql-data:
