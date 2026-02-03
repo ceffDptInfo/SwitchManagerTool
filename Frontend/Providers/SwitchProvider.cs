@@ -32,7 +32,7 @@ namespace Frontend.Providers
             }
             catch (Exception ex)
             {
-                _state = _state.CopyWith(DataState: SwitchProviderDataStates.Error, ErrorMsg: ex.Message);
+                _state = _state.CopyWith(DataState: ProviderDataStates.Error, ErrorMsg: ex.Message);
                 return null;
             }
             finally
@@ -49,13 +49,13 @@ namespace Frontend.Providers
                 Dictionary<string, Dictionary<string, object>> deviceInfo = await _httpClient.GetFromJsonAsync<Dictionary<string, Dictionary<string, object>>>(url) ?? new();
 
                 SwitchDB sw = new SwitchDB() { Ip = deviceInfo["deviceInfo"]["ipAddr"].ToString() ?? "No IP!", MacAdress = deviceInfo["deviceInfo"]["macAddr"].ToString() ?? "No MAC!", Name = deviceInfo["deviceName"]["name"].ToString() ?? "No name!", Password = password, Username = username };
-                _state = _state.CopyWith(DataState: SwitchProviderDataStates.Loaded, ErrorMsg: "");
+                _state = _state.CopyWith(DataState: ProviderDataStates.Loaded, ErrorMsg: "");
 
                 return sw;
             }
             catch (Exception ex)
             {
-                _state = _state.CopyWith(DataState: SwitchProviderDataStates.Error, ErrorMsg: ex.Message);
+                _state = _state.CopyWith(DataState: ProviderDataStates.Error, ErrorMsg: ex.Message);
                 return null;
             }
             finally
@@ -86,7 +86,7 @@ namespace Frontend.Providers
             }
             catch (Exception ex)
             {
-                _state = _state.CopyWith(DataState: SwitchProviderDataStates.Error, ErrorMsg: ex.Message);
+                _state = _state.CopyWith(DataState: ProviderDataStates.Error, ErrorMsg: ex.Message);
             }
             finally
             {
@@ -117,7 +117,7 @@ namespace Frontend.Providers
             }
             catch (Exception e)
             {
-                _state = _state.CopyWith(DataState: SwitchProviderDataStates.Error, ErrorMsg: e.Message);
+                _state = _state.CopyWith(DataState: ProviderDataStates.Error, ErrorMsg: e.Message);
             }
             finally
             {
@@ -139,7 +139,7 @@ namespace Frontend.Providers
             }
             catch (Exception ex)
             {
-                _state = _state.CopyWith(DataState: SwitchProviderDataStates.Error, ErrorMsg: ex.Message);
+                _state = _state.CopyWith(DataState: ProviderDataStates.Error, ErrorMsg: ex.Message);
             }
             finally
             {
@@ -159,9 +159,9 @@ namespace Frontend.Providers
             return _state.Switches.Any(sw => sw.Ip == swIp);
         }
 
-        protected SwitchProviderDataStates _GetDataState()
+        protected ProviderDataStates _GetDataState()
         {
-            return _state.Switches.Count == 0 ? SwitchProviderDataStates.Empty : SwitchProviderDataStates.Loaded;
+            return _state.Switches.Count == 0 ? ProviderDataStates.Empty : ProviderDataStates.Loaded;
         }
 
         protected bool _ValidateSwitchForm(SwitchDB sw)

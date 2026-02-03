@@ -79,7 +79,7 @@ namespace FrontendxUnitTest
 
             await _provider.FetchLldpRemoteDevices();
 
-            Assert.Equal(EquipmemtProviderDataStates.Loaded, _provider.state.DataState);
+            Assert.Equal(ProviderDataStates.Loaded, _provider.state.DataState);
             Assert.Single(_provider.state.Equipments);
 
             var equipment = _provider.state.Equipments.First();
@@ -126,7 +126,7 @@ namespace FrontendxUnitTest
             bool result = await _provider.SwitchPortModeTo(true, 1);
 
             Assert.False(result);
-            Assert.Equal(EquipmemtProviderDataStates.Error, _provider.state.DataState);
+            Assert.Equal(ProviderDataStates.Error, _provider.state.DataState);
         }
 
         [Fact]
@@ -184,7 +184,7 @@ namespace FrontendxUnitTest
 
         private void SetPrivateState(EquipmentProvider provider, List<DatagridContent> equipments)
         {
-            var newState = new EquipmentState(equipments, EquipmemtProviderDataStates.Loaded, "");
+            var newState = new EquipmentState(equipments, ProviderDataStates.Loaded, "");
 
             var field = typeof(EquipmentProvider).GetField("_state", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (field != null)

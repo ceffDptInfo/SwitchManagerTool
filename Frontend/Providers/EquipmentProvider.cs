@@ -46,7 +46,7 @@ namespace Frontend.Providers
         public async Task FetchLldpRemoteDevices()
         {
 
-            _state = _state.CopyWith(Equipments: [], DataState: EquipmemtProviderDataStates.Loading);
+            _state = _state.CopyWith(Equipments: [], DataState: ProviderDataStates.Loading);
             UpdatedContent?.Invoke(_state, EventArgs.Empty);
 
             foreach (SwitchDB sw in _switchProvider.state.SelectedSwitches)
@@ -56,7 +56,7 @@ namespace Frontend.Providers
 
                 if (sw == null)
                 {
-                    _state = _state.CopyWith(DataState: EquipmemtProviderDataStates.Error, ErrorMsg: "No Switch is selected!");
+                    _state = _state.CopyWith(DataState: ProviderDataStates.Error, ErrorMsg: "No Switch is selected!");
                     UpdatedContent?.Invoke(_state, EventArgs.Empty);
                     return;
                 }
@@ -172,11 +172,11 @@ namespace Frontend.Providers
                 _switchProvider.UpdateSwitch(sw.Id);
 
                 previous.Sort((a, b) => a.Id.CompareTo(b.Id));
-                _state = _state.CopyWith(Equipments: previous.Distinct().ToList(), DataState: EquipmemtProviderDataStates.Loading);
+                _state = _state.CopyWith(Equipments: previous.Distinct().ToList(), DataState: ProviderDataStates.Loading);
 
 
 
-                _state = _state.CopyWith(DataState: EquipmemtProviderDataStates.Loaded);
+                _state = _state.CopyWith(DataState: ProviderDataStates.Loaded);
                 UpdatedContent?.Invoke(_state, new EventArgs());
             }
 
@@ -192,7 +192,7 @@ namespace Frontend.Providers
 
                 if (sw == null)
                 {
-                    _state = _state.CopyWith(DataState: EquipmemtProviderDataStates.Error, ErrorMsg: "No Switch is selected!");
+                    _state = _state.CopyWith(DataState: ProviderDataStates.Error, ErrorMsg: "No Switch is selected!");
                     return false;
                 }
 
@@ -203,7 +203,7 @@ namespace Frontend.Providers
             }
             catch (Exception ex)
             {
-                _state = _state.CopyWith(DataState: EquipmemtProviderDataStates.Error, ErrorMsg: ex.Message);
+                _state = _state.CopyWith(DataState: ProviderDataStates.Error, ErrorMsg: ex.Message);
                 return false;
             }
             finally
@@ -220,7 +220,7 @@ namespace Frontend.Providers
 
                 if (sw == null)
                 {
-                    _state = _state.CopyWith(DataState: EquipmemtProviderDataStates.Error, ErrorMsg: "No Switch is selected!");
+                    _state = _state.CopyWith(DataState: ProviderDataStates.Error, ErrorMsg: "No Switch is selected!");
                     return false;
                 }
 
@@ -239,7 +239,7 @@ namespace Frontend.Providers
             }
             catch (Exception ex)
             {
-                _state = _state.CopyWith(DataState: EquipmemtProviderDataStates.Error, ErrorMsg: ex.Message);
+                _state = _state.CopyWith(DataState: ProviderDataStates.Error, ErrorMsg: ex.Message);
                 return false;
             }
             finally
@@ -256,7 +256,7 @@ namespace Frontend.Providers
 
                 if (sw == null)
                 {
-                    _state = _state.CopyWith(DataState: EquipmemtProviderDataStates.Error, ErrorMsg: "No Switch is selected!");
+                    _state = _state.CopyWith(DataState: ProviderDataStates.Error, ErrorMsg: "No Switch is selected!");
                     return false;
                 }
 
@@ -267,7 +267,7 @@ namespace Frontend.Providers
             }
             catch (Exception ex)
             {
-                _state = _state.CopyWith(DataState: EquipmemtProviderDataStates.Error, ErrorMsg: ex.Message);
+                _state = _state.CopyWith(DataState: ProviderDataStates.Error, ErrorMsg: ex.Message);
                 return false;
             }
             finally
@@ -287,7 +287,7 @@ namespace Frontend.Providers
             }
             catch (Exception ex)
             {
-                _state = _state.CopyWith(DataState: EquipmemtProviderDataStates.Error, ErrorMsg: ex.Message);
+                _state = _state.CopyWith(DataState: ProviderDataStates.Error, ErrorMsg: ex.Message);
                 return false;
             }
             finally
@@ -304,7 +304,7 @@ namespace Frontend.Providers
 
                 if (sw == null)
                 {
-                    _state = _state.CopyWith(DataState: EquipmemtProviderDataStates.Error, ErrorMsg: "No Switch is selected!");
+                    _state = _state.CopyWith(DataState: ProviderDataStates.Error, ErrorMsg: "No Switch is selected!");
                     return null;
                 }
 
@@ -316,7 +316,7 @@ namespace Frontend.Providers
             }
             catch (Exception ex)
             {
-                _state = _state.CopyWith(DataState: EquipmemtProviderDataStates.Error, ErrorMsg: ex.Message);
+                _state = _state.CopyWith(DataState: ProviderDataStates.Error, ErrorMsg: ex.Message);
                 return null;
             }
             finally
@@ -324,9 +324,9 @@ namespace Frontend.Providers
                 UpdatedContent?.Invoke(_state, EventArgs.Empty);
             }
         }
-        private EquipmemtProviderDataStates _GetDataState()
+        private ProviderDataStates _GetDataState()
         {
-            return _state.Equipments.Count == 0 ? EquipmemtProviderDataStates.Empty : EquipmemtProviderDataStates.Loaded;
+            return _state.Equipments.Count == 0 ? ProviderDataStates.Empty : ProviderDataStates.Loaded;
         }
     }
 }

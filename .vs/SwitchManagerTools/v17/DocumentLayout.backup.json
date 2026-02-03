@@ -1,7 +1,28 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\cp-22rel\\source\\repos\\SwitchManagerTool\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{4AAA53A5-29CB-41A1-966E-A0448AE60928}|Frontend\\Frontend.csproj|c:\\users\\cp-22rel\\source\\repos\\switchmanagertool\\frontend\\providers\\switchstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4AAA53A5-29CB-41A1-966E-A0448AE60928}|Frontend\\Frontend.csproj|solutionrelative:frontend\\providers\\switchstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4AAA53A5-29CB-41A1-966E-A0448AE60928}|Frontend\\Frontend.csproj|c:\\users\\cp-22rel\\source\\repos\\switchmanagertool\\frontend\\providers\\equipmentstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4AAA53A5-29CB-41A1-966E-A0448AE60928}|Frontend\\Frontend.csproj|solutionrelative:frontend\\providers\\equipmentstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4AAA53A5-29CB-41A1-966E-A0448AE60928}|Frontend\\Frontend.csproj|c:\\users\\cp-22rel\\source\\repos\\switchmanagertool\\frontend\\providers\\enums\\providerdatastates.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4AAA53A5-29CB-41A1-966E-A0448AE60928}|Frontend\\Frontend.csproj|solutionrelative:frontend\\providers\\enums\\providerdatastates.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4AAA53A5-29CB-41A1-966E-A0448AE60928}|Frontend\\Frontend.csproj|c:\\users\\cp-22rel\\source\\repos\\switchmanagertool\\frontend\\providers\\equipmentprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4AAA53A5-29CB-41A1-966E-A0448AE60928}|Frontend\\Frontend.csproj|solutionrelative:frontend\\providers\\equipmentprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4AAA53A5-29CB-41A1-966E-A0448AE60928}|Frontend\\Frontend.csproj|c:\\users\\cp-22rel\\source\\repos\\switchmanagertool\\frontend\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{4AAA53A5-29CB-41A1-966E-A0448AE60928}|Frontend\\Frontend.csproj|solutionrelative:frontend\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,8 +30,47 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 2,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ProviderDataStates.cs",
+              "DocumentMoniker": "C:\\Users\\cp-22rel\\source\\repos\\SwitchManagerTool\\Frontend\\Providers\\enums\\ProviderDataStates.cs",
+              "RelativeDocumentMoniker": "Frontend\\Providers\\enums\\ProviderDataStates.cs",
+              "ToolTip": "C:\\Users\\cp-22rel\\source\\repos\\SwitchManagerTool\\Frontend\\Providers\\enums\\ProviderDataStates.cs",
+              "RelativeToolTip": "Frontend\\Providers\\enums\\ProviderDataStates.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-03T10:52:00.294Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "EquipmentState.cs",
+              "DocumentMoniker": "C:\\Users\\cp-22rel\\source\\repos\\SwitchManagerTool\\Frontend\\Providers\\EquipmentState.cs",
+              "RelativeDocumentMoniker": "Frontend\\Providers\\EquipmentState.cs",
+              "ToolTip": "C:\\Users\\cp-22rel\\source\\repos\\SwitchManagerTool\\Frontend\\Providers\\EquipmentState.cs",
+              "RelativeToolTip": "Frontend\\Providers\\EquipmentState.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-03T10:50:54.773Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SwitchState.cs",
+              "DocumentMoniker": "C:\\Users\\cp-22rel\\source\\repos\\SwitchManagerTool\\Frontend\\Providers\\SwitchState.cs",
+              "RelativeDocumentMoniker": "Frontend\\Providers\\SwitchState.cs",
+              "ToolTip": "C:\\Users\\cp-22rel\\source\\repos\\SwitchManagerTool\\Frontend\\Providers\\SwitchState.cs",
+              "RelativeToolTip": "Frontend\\Providers\\SwitchState.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-03T10:50:06.477Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{e1b7d1f8-9b3c-49b1-8f4f-bfc63a88835d}"
@@ -18,6 +78,32 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{0174dea2-fdbe-4ef1-8f99-c0beae78880f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Home.razor",
+              "DocumentMoniker": "C:\\Users\\cp-22rel\\source\\repos\\SwitchManagerTool\\Frontend\\Components\\Pages\\Home.razor",
+              "RelativeDocumentMoniker": "Frontend\\Components\\Pages\\Home.razor",
+              "ToolTip": "C:\\Users\\cp-22rel\\source\\repos\\SwitchManagerTool\\Frontend\\Components\\Pages\\Home.razor",
+              "RelativeToolTip": "Frontend\\Components\\Pages\\Home.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-03T10:48:46.167Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "EquipmentProvider.cs",
+              "DocumentMoniker": "C:\\Users\\cp-22rel\\source\\repos\\SwitchManagerTool\\Frontend\\Providers\\EquipmentProvider.cs",
+              "RelativeDocumentMoniker": "Frontend\\Providers\\EquipmentProvider.cs",
+              "ToolTip": "C:\\Users\\cp-22rel\\source\\repos\\SwitchManagerTool\\Frontend\\Providers\\EquipmentProvider.cs",
+              "RelativeToolTip": "Frontend\\Providers\\EquipmentProvider.cs",
+              "ViewState": "AgIAAAQBAAAAAAAAAAAuwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-03T10:48:34.798Z",
+              "EditorCaption": ""
             }
           ]
         }

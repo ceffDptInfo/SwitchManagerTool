@@ -54,7 +54,7 @@ namespace FrontendxUnitTest
             var result = await _provider.FetchSwitches();
 
             Assert.Null(result);
-            Assert.Equal(SwitchProviderDataStates.Error, _provider.state.DataState);
+            Assert.Equal(ProviderDataStates.Error, _provider.state.DataState);
             Assert.False(string.IsNullOrEmpty(_provider.state.ErrorMsg));
         }
 
@@ -65,7 +65,7 @@ namespace FrontendxUnitTest
 
             await _provider.AddSwitch(invalidSwitch);
 
-            Assert.Equal(SwitchProviderDataStates.Error, _provider.state.DataState);
+            Assert.Equal(ProviderDataStates.Error, _provider.state.DataState);
             Assert.False(string.IsNullOrEmpty(_provider.state.ErrorMsg));
         }
 
@@ -92,7 +92,7 @@ namespace FrontendxUnitTest
                 ItExpr.IsAny<CancellationToken>()
                 );
 
-            Assert.NotEqual(SwitchProviderDataStates.Error, _provider.state.DataState);
+            Assert.NotEqual(ProviderDataStates.Error, _provider.state.DataState);
         }
 
         [Fact]
@@ -158,7 +158,7 @@ namespace FrontendxUnitTest
 
             await _provider.DeleteSwitch(fakeSwitch);
 
-            Assert.Equal(SwitchProviderDataStates.Empty, _provider.state.DataState);
+            Assert.Equal(ProviderDataStates.Empty, _provider.state.DataState);
         }
 
 

@@ -2,24 +2,17 @@
 
 namespace Frontend.Providers
 {
-    public enum EquipmemtProviderDataStates
-    {
-        Loading,
-        Loaded,
-        Empty,
-        Error,
-    }
     public class EquipmentState
     {
         public List<DatagridContent> Equipments;
 
-        public EquipmemtProviderDataStates DataState;
+        public ProviderDataStates DataState;
         public string ErrorMsg;
-        public bool IsLoading { get { return DataState == EquipmemtProviderDataStates.Loading; } }
-        public bool IsError { get { return DataState == EquipmemtProviderDataStates.Error; } }
+        public bool IsLoading { get { return DataState == ProviderDataStates.Loading; } }
+        public bool IsError { get { return DataState == ProviderDataStates.Error; } }
 
 
-        public EquipmentState(List<DatagridContent> equipments, EquipmemtProviderDataStates dataState, string errorMsg)
+        public EquipmentState(List<DatagridContent> equipments, ProviderDataStates dataState, string errorMsg)
         {
             this.Equipments = equipments;
             this.DataState = dataState;
@@ -29,13 +22,13 @@ namespace Frontend.Providers
         public EquipmentState()
         {
             Equipments = new();
-            DataState = EquipmemtProviderDataStates.Empty;
+            DataState = ProviderDataStates.Empty;
             ErrorMsg = "";
         }
 
         public EquipmentState CopyWith(
             List<DatagridContent>? Equipments = null,
-            EquipmemtProviderDataStates? DataState = null,
+            ProviderDataStates? DataState = null,
             string? ErrorMsg = null
             )
         {
