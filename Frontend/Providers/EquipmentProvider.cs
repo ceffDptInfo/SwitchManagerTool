@@ -141,6 +141,7 @@ namespace Frontend.Providers
                                 AdminMode = vlan.AdminMode,
                                 RemotePortId = savedEquipment.MacAddress,
                                 RemoteSysName = savedEquipment.Name,
+                                ChassisId = savedEquipment.Name,
                                 IpV4 = savedEquipment.IpV4
                             };
 
