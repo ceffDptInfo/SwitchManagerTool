@@ -215,7 +215,7 @@ namespace Frontend.Providers
                 //    }
                 var previous = _state.Equipments.ToList();
                 previous.AddRange(contentWithPrevious);
-                sw.Equipments = content.Select(e => new Equipment { IpV4 = e.IpV4, MacAddress = e.RemotePortId, Name = e.RemoteSysName, PortId = e.Id, Type = e.EquipmentType.ToString() }).ToList();
+                sw.Equipments = content.Select(e => new Equipment { IpV4 = e.IpV4, MacAddress = e.RemotePortId, Name = string.IsNullOrWhiteSpace(e.RemoteSysName) ? e.ChassisId : e.RemoteSysName, PortId = e.Id, Type = e.EquipmentType.ToString() }).ToList();
                 _switchProvider.UpdateSwitch(sw.Id);
 
                 previous.Sort((a, b) => a.Id.CompareTo(b.Id));
