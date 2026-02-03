@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FrontendxUnitTest")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3686bc9ec0713ff2da838a893392d1df4471d47f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6fc260d371919cfd574f51cb9cd0dc45feba1d30")]
 [assembly: System.Reflection.AssemblyProductAttribute("FrontendxUnitTest")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FrontendxUnitTest")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

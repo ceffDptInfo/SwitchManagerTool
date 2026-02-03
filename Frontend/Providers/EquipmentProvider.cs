@@ -166,54 +166,6 @@ namespace Frontend.Providers
                     }
                 }
 
-                ////Offline
-                //endpoint = $"OfflineEquipment/GetOfflineEquipmentFromSwitch?switchDBId={sw.Id}";
-                //Dictionary<int, List<object>>? offlineDevices = await _httpClient.GetFromJsonAsync<Dictionary<int, List<object>>?>(endpoint);
-
-                //_state = _state.CopyWith(Equipments: content);
-
-                //if (offlineDevices == null)
-                //{
-                //    _state = _state.CopyWith(DataState: EquipmemtProviderDataStates.Loaded);
-                //    return;
-                //}
-
-
-                //foreach ((int key, List<object> value) in offlineDevices)
-                //{
-                //    if (key == 1)
-                //    {
-                //        foreach (object device in value)
-                //        {
-                //            Windows? windows = JsonSerializer.Deserialize<Windows>(JsonSerializer.Serialize(device), options);
-
-                //            if (windows == null)
-                //            {
-                //                return;
-                //            }
-
-                //            var c = contentWithPrevious.Where((c) => c.Id == windows.Id).ToList();
-                //            if (c.Count() == 0)
-                //            {
-                //                continue;
-                //            }
-                //            c[0].ConnectionState = false;
-                //        }
-                //    }
-                //    else if (key == 2)
-                //    {
-                //        foreach (object device in value)
-                //        {
-                //            Switch? switchEq = JsonSerializer.Deserialize<Switch?>(JsonSerializer.Serialize(value), options);
-                //            if (switchEq == null)
-                //            {
-                //                return;
-                //            }
-
-                //            var c = contentWithPrevious.Where((c) => c.Id == switchEq.Id).ToList();
-                //            c[0].ConnectionState = false;
-                //        }
-                //    }
                 var previous = _state.Equipments.ToList();
                 previous.AddRange(contentWithPrevious);
                 sw.Equipments = content.Select(e => new Equipment { IpV4 = e.IpV4, MacAddress = e.RemotePortId, Name = string.IsNullOrWhiteSpace(e.RemoteSysName) ? e.ChassisId : e.RemoteSysName, PortId = e.Id, Type = e.EquipmentType.ToString() }).ToList();
