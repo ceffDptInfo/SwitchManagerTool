@@ -50,8 +50,7 @@
               "RelativeToolTip": "Frontend\\Providers\\enums\\ProviderDataStates.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-03T10:52:00.294Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-03T10:52:00.294Z"
             },
             {
               "$type": "Document",
@@ -63,8 +62,7 @@
               "RelativeToolTip": "Frontend\\Providers\\EquipmentState.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-03T10:50:54.773Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-03T10:50:54.773Z"
             },
             {
               "$type": "Document",
@@ -89,8 +87,7 @@
               "RelativeToolTip": "Frontend\\Components\\Pages\\Home.razor",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-03T10:48:46.167Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-03T10:48:46.167Z"
             },
             {
               "$type": "Document",
@@ -102,8 +99,7 @@
               "RelativeToolTip": "Frontend\\Providers\\EquipmentProvider.cs",
               "ViewState": "AgIAAAQBAAAAAAAAAAAuwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-03T10:48:34.798Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-03T10:48:34.798Z"
             }
           ]
         }
